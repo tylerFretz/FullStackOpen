@@ -4,7 +4,7 @@ const Filter = ({value, onChange}) => {
 
     return (
         <div>
-            find countries <input value={value} onChange={onChange}/>
+            <strong>Filter countries</strong> <input value={value} onChange={onChange}/>
         </div>
     );
 };
