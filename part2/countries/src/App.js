@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Filter from './components/Filter';
 import Countries from './components/Countries';
-import axios from 'axios';
+import axios from '../../phonebook/node_modules/axios';
 
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [countryFilter, setCountryFilter] = useState("");
   const [hasFilter, setHasFilter] = useState(false);
-  const [weather, setWeather] = useState([]);
+  
 
   const fetchCountries = () => {
     axios.get("https://restcountries.eu/rest/v2/all").then((response) => {
@@ -15,21 +15,7 @@ const App = () => {
     });
   };
 
-  useEffect(fetchCountries, [])
-
-  const key = process.env.REACT_APP_API_KEY;
-
-  console.log(key);
-
-  const getWeather = () => {
-    axios.get(`http://api.weatherstack.com/current?access_key=${key}&query=Toronto`)
-         .then((response) => {
-           setWeather(response.data)
-         })
-  };
-
-  useEffect(getWeather, [])
-
+  useEffect(fetchCountries, []);
 
   const filteredCountries = countries.filter((country) => {
     return country.name.toLowerCase().includes(countryFilter.toLowerCase());

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Country = ( {country} ) => {
+
+    const [weather, setWeather] = useState([]);
 
     const languagesList = country.languages.map((lang) => {
        return <li key={lang.iso639_2}>{lang.name}</li>;
@@ -14,11 +16,22 @@ const Country = ( {country} ) => {
         return <span key={idx}>{tz} | </span>;
     })
 
+      const key = process.env.REACT_APP_API_KEY;
+
+  const getWeather = () => {
+    axios.get(`http://api.weatherstack.com/current?access_key=${key}&query=Toronto`)
+         .then((response) => {
+           setWeather(response.data);
+    });
+  };
+
+  useEffect(getWeather, [])
+
     return (
         <div>
             <h2>{country.name}</h2>
             <div>
-                <img height="100px" width="200px" src={country.flag}></img>
+                <img height="100px" width="200px" src={country.flag} alt="national flag"></img>
             </div>
             <div>
                 <span>
