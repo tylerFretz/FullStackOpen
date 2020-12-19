@@ -11,12 +11,12 @@ const Countries = ({countries, handleClick}) => {
     const countryList = countries.map((country) => {
         return (
             <ul>
-                <div key={country.alpha3Code} className="countryList">
+                <li key={country.alpha3Code} className="countryList">
                     {country.name}
                     <button onClick={handleClick} id={country.name}>
                         show
                     </button>
-                </div>
+                </li>
             </ul>
         )
     })

@@ -5,13 +5,17 @@ const Weather = ({city}) => {
     const [weather, setWeather] = useState('');
     const key = process.env.REACT_APP_API_KEY;
 
+    try {
     useEffect(()=>{
         axios.get(`http://api.weatherstack.com/current?access_key=${key}&query=${city}`)
             .then(response=>{
                 setWeather(response.data)
             })
     },[])
-
+    }
+    catch (err) {
+        setWeather("API ERROR")
+    }
     console.log(weather)
 
     if ( ! weather ) {
