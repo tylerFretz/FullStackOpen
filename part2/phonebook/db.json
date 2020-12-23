@@ -19,7 +19,7 @@
       "important": true
     }
   ],
-  "persons": [
+  "phonebook": [
     {
       "name": "Ada Lovelace",
       "number": "545454",
