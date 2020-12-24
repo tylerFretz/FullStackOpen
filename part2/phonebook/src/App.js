@@ -33,15 +33,27 @@ const App = () => {
 
   const addPerson = event => {
     event.preventDefault();
+
     const personObject = {
       name: newName,
       number: newNumber
+    }
+
+    if (!personObject.name || !personObject.number) {
+      setNotification(
+        {
+          body: `Name or number missing`,
+          type: 'error'
+        }
+      )
+      return
     }
 
     persons.some(person => person.name === newName) ?
     updateNumber(personObject)
     : phonebookService.create(personObject)
         .then(res => {
+          console.log(res)
           setPersons(persons.concat(personObject))
           setNotification(
             {
@@ -54,10 +66,11 @@ const App = () => {
           console.log(err);
           setNotification(
             {
-              body: `Information of '${personObject.name}' has already been removed from server`,
+              body: `${err.response.data.error}`,
               type: 'error'
             }
           )
+          console.log(err.response.data)
         })
 
     setNewName('')
@@ -112,10 +125,11 @@ const App = () => {
         console.log(err)
         setNotification(
             {
-              body: `Information of '${person.name}' has already been removed from server`,
+              body: `${err.response.data.error}`,
               type: 'error'
             }
           )
+          console.log(err.response.data);
       })
     : alert("The contact was not updated")
   }
