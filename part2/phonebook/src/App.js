@@ -15,6 +15,7 @@ const App = () => {
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleFilterChange = (event) => setNewFilter(event.target.value)
+  const handleNotificationClose = event => setNotification(null)
 
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const App = () => {
   useEffect(() => {
     setTimeout(() => {
       setNotification(null)
-    }, 5000)
+    }, 10000)
   }, [notification])
 
 
@@ -39,19 +40,12 @@ const App = () => {
       number: newNumber
     }
 
-    if (!personObject.name || !personObject.number) {
-      setNotification(
-        {
-          body: `Name or number missing`,
-          type: 'error'
-        }
-      )
+    if (persons.some(person => person.name === newName)) {
+      updateNumber(personObject)
       return
     }
-
-    persons.some(person => person.name === newName) ?
-    updateNumber(personObject)
-    : phonebookService.create(personObject)
+    else { 
+      phonebookService.create(personObject)
         .then(res => {
           console.log(res)
           setPersons(persons.concat(personObject))
@@ -72,6 +66,7 @@ const App = () => {
           )
           console.log(err.response.data)
         })
+    }
 
     setNewName('')
     setNewNumber('')
@@ -105,7 +100,7 @@ const App = () => {
   }
 
   const updateNumber = person => {
-    const result = window.confirm(`${person.name} is already added to the phonebook, the old number with a new one?`)
+    const result = window.confirm(`${person.name} is already added to the phonebook, update the old number with a new one?`)
 
     const id = persons.filter(p => p.name === newName).map(p => p.id);
 
@@ -142,7 +137,7 @@ const App = () => {
     <div>
       <h1>Phonebook</h1>
 
-      <Notification message={notification}/>
+      <Notification message={notification} onClose={handleNotificationClose}/>
 
       <Filter value={newFilter} onChange={handleFilterChange}/>
 
