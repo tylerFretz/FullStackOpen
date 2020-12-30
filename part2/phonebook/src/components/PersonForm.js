@@ -13,7 +13,7 @@ const PersonForm = ({
                 name: <input value={name} onChange={onNameChange} />
             </div>
             <div>
-                number: <input value={number} onChange={onNumberChange} />
+                number: <input value={number} onChange={onNumberChange} maxLength="14"/>
             </div>
             <div>
                 <button type="submit">add</button>

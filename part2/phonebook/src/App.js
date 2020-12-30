@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AsYouType } from 'libphonenumber-js'
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
@@ -12,9 +13,9 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ notification, setNotification ] = useState(null)
 
-  const handleNameChange = (event) => setNewName(event.target.value)
-  const handleNumberChange = (event) => setNewNumber(event.target.value)
-  const handleFilterChange = (event) => setNewFilter(event.target.value)
+  const handleNameChange = event => setNewName(event.target.value)
+  const handleNumberChange = event => setNewNumber(new AsYouType('US').input(event.target.value))
+  const handleFilterChange = event => setNewFilter(event.target.value)
   const handleNotificationClose = event => setNotification(null)
 
 
