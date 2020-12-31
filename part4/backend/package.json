@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "fullstack open part4",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "deploy": "git push heroku master",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tylerFretz/FullStackOpen.git"
+  },
+  "author": "Tyler Fretz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tylerFretz/FullStackOpen/issues"
+  },
+  "homepage": "https://github.com/tylerFretz/FullStackOpen#readme",
+  "devDependencies": {
+    "eslint": "^7.16.0",
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.11.9"
+  }
+}
