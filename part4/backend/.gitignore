@@ -1,3 +1,6 @@
 node_modules/
 .env
 notes.txt
+.eslintrc.js
+.eslintignore
+requests/
