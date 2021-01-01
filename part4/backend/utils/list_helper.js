@@ -13,12 +13,37 @@ const favouriteBlog = (blogs) => {
 }
 
 const mostBlogs = (blogs) => {
-    const 
+    const authorsByCount = _.chain(blogs)
+        .countBy(blog => blog.author)
+        .toPairs()
+        .sortBy(item => item[1])
+        .reverse()
+        .value()
+    const returnedAuthor = {
+        author: authorsByCount[0][0],
+        blogs: authorsByCount[0][1]
+    }
+    return returnedAuthor
 }
 
+const mostLikes = (blogs) => {
+    const mostLiked  = _.chain(blogs)
+        .groupBy('author')
+        .mapValues(author => _.sumBy(author, blog => blog.upvotes))
+        .toPairs()
+        .sortBy(group => group[1])
+        .reverse()
+        .head()
+        .value()
+
+    const result = { author: mostLiked[0], upvotes: mostLiked[1] }
+    return result
+}
 
 module.exports = {
     dummy,
     totalUpvotes,
-    favouriteBlog
+    favouriteBlog,
+    mostBlogs,
+    mostLikes
 }
