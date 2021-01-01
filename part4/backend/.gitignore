@@ -4,5 +4,4 @@ notes.txt
 .eslintrc.js
 .eslintignore
 requests/
-tests/
 .vscode/
