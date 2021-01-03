@@ -5,7 +5,7 @@ const blogSchema = new mongoose.Schema({
     author: { type: String },
     title: { type: String },
     url: { type: String, required: true, unique: true, match: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/ },
-    upvotes: { type: Number }
+    upvotes: { type: Number, default: 0 }
 })
 
 // Apply the uniqueValidator plugin to blogSchema.
