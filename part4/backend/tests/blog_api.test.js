@@ -4,7 +4,9 @@ const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 
+const User = require('../models/user')
 const Blog = require('../models/blog')
+let userLoginRes = null
 
 beforeEach(async () => {
     await Blog.deleteMany({})
@@ -57,7 +59,23 @@ describe('GET methods', () => {
 })
 
 describe('POST methods', () => {
+    beforeEach(async () => {
+
+        await User.deleteMany({})
+
+        await api
+            .post('/api/users')
+            .send(helper.initialUsers[0])
+
+        const res = await api
+            .post('/api/login')
+            .send({ username: 'root', name: 'rootName', password: 'password' })
+
+        userLoginRes = res.body
+    })
+
     test('a valid blog can be added', async () => {
+
         const newBlog = {
             author: 'John',
             title: 'ABCD and EFG',
@@ -68,6 +86,7 @@ describe('POST methods', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
+            .set({ Authorization: `bearer ${userLoginRes.token}` })
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
@@ -89,6 +108,7 @@ describe('POST methods', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
+            .set({ Authorization: `bearer ${userLoginRes.token}` })
             .expect(400)
 
         const blogsAtEnd = await helper.blogsInDb()
@@ -106,6 +126,7 @@ describe('POST methods', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
+            .set({ Authorization: `bearer ${userLoginRes.token}` })
             .expect(200)
 
         const blogsAtEnd = await helper.blogsInDb()
@@ -123,18 +144,61 @@ describe('POST methods', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
+            .set({ Authorization: `bearer ${userLoginRes.token}` })
             .expect(400)
+    })
+
+    test('creating a user with a username < 3 characters returns 400', async () => {
+        const newUser = {
+            username: 'Mi',
+            name: 'Mike',
+            password: 'password'
+        }
+
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+    })
+
+    test('creating a user with a password < 3 characters returns 401', async () => {
+        const newUser = {
+            username: 'Mikey',
+            name: 'Mike',
+            password: 'pw'
+        }
+
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(401)
     })
 })
 
 
 describe('DELETE methods', () => {
+    beforeEach(async () => {
+
+        await User.deleteMany({})
+
+        await api
+            .post('/api/users')
+            .send(helper.initialUsers[0])
+
+        const res = await api
+            .post('/api/login')
+            .send({ username: 'root', name: 'rootName', password: 'password' })
+
+        userLoginRes = res.body
+    })
+
     test('a blog can be deleted', async () => {
         const blogsAtStart = await helper.blogsInDb()
         const blogToDelete = blogsAtStart[0]
 
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
+            .set({ Authorization: `bearer ${userLoginRes.token}` })
             .expect(204)
 
         const blogsAtEnd = await helper.blogsInDb()
