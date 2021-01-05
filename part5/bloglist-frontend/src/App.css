@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+.error {
+  display: inline;
+  color: red;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 30px;
+}
+
+.info {
+  display: inline;
+  color: green;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 30px;
+}
