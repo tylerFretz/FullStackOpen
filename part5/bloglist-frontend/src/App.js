@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 import Blogs from './components/Blogs'
-import Login from './components/Login'
 import Logout from './components/Logout'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogService'
-import loginService from './services/login'
+import loginService from './services/loginService'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
-  const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [author, setAuthor] = useState('')
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
   
-  const handleUsernameChange = event => setUsername(event.target.value)
-  const handlePasswordChange = event => setPassword(event.target.value)
-  const handleAuthorChange = event => setAuthor(event.target.value)
-  const handleTitleChange = event => setTitle(event.target.value)
-  const handleUrlChange = event => setUrl(event.target.value)
   const handleErrorMessageClose = () => setErrorMessage(null)
+
+
+
 
   useEffect(() => {
     blogService
@@ -48,20 +40,18 @@ const App = () => {
     }
   }, [])
 
-  const handleLogin = async event => {
-    event.preventDefault()
+
+
+
+  const handleLogin = async userObject => {
     
     try {
-      const user = await loginService.login({
-        username, password
-      })
+      const user = await loginService.login(userObject)
 
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
 
       blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
     }
     catch (exception) {
       setErrorMessage(
@@ -79,8 +69,6 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
     blogService.setToken(null)
     setUser(null)
-    setUsername('')
-    setPassword('')
     setErrorMessage(
       {
         body: 'Logged Out',
@@ -89,96 +77,77 @@ const App = () => {
     )
   }
 
-  //  phonebookService.create(personObject)
-  //       .then(res => {
-  //         console.log(res)
-  //         setPersons(persons.concat(personObject))
-  //         setNotification(
-  //           {
-  //             body: `Added ${personObject.name}`,
-  //             type: 'info'
-  //           }
-  //         )
-  //       })
-  //       .catch(err => {
-  //         console.log(err);
-  //         setNotification(
-  //           {
-  //             body: `${err.response.data.error}`,
-  //             type: 'error'
-  //           }
-  //         )
-  //         console.log(err.response.data)
-  //       })
+  const addBlog = async blogObject => {
 
-  const addBlog = event => {
-    event.preventDefault()
-
-    const blogObject = {
-      author: author,
-      title: title,
-      url: url
+    try {
+      const blog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(blog))
+      setErrorMessage(
+        {
+          body: `Added ${blogObject.title}`,
+          type: 'info'
+        }
+      )
     }
-
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setAuthor('')
-        setTitle('')
-        setUrl('')
-        setErrorMessage(
-          {
-            body: `Added ${blogObject.title}`,
-            type: 'info'
-          }
-        )
-      })
-      .catch(err => {
-        console.log(err)
-        setErrorMessage(
-          {
-            body: `${err.response.data.error}`,
-            type: 'error'
-          }
-        )
-      })
+    catch (exception) {
+      setErrorMessage(
+        {
+          body: `${exception.response.data.error}`,
+          type: 'error'
+        }
+      )
+    }
   }
+
+  // const removeBlog = async blogObject => {
+  //   const result = window.confirm(`Delete ${blogObject.title} ?`)
+
+  //   if (result) {
+  //     try {
+  //       const blog = await blogService.remove(blogObject.id)
+  //       setBlogs(blogs.filter(b => b.id !== blogObject.id))
+  //       setErrorMessage(
+  //         {
+  //           body: `Removed ${blogObject.title}`,
+  //           type: 'info'
+  //         }
+  //       )
+  //     }
+  //     catch (exception) {
+  //       setBlogs(blogs.filter(b => b.id !== blogObject.id))
+  //       setErrorMessage(
+  //         {
+  //           body: `${blogObject.title} was already removed`,
+  //           type: 'error'
+  //         }
+  //       )
+  //     }
+  //   }
+  // }
+
+  const loginForm = () => (
+    <Togglable buttonLabel='login'>
+      <LoginForm handleLogin={handleLogin} />
+    </Togglable>
+  )
+
+  const blogForm = () => (
+    <Togglable buttonLabel='new blog'>
+      <BlogForm createBlog={addBlog} />
+    </Togglable>
+  )
 
   return (
     <div>
       <h2>Blogs</h2>
-
       <Notification message={errorMessage} onClose={handleErrorMessageClose} />
 
       {user === null ?
-      <Login 
-        username={username}
-        password={password}
-        onUsernameChange={handleUsernameChange}
-        onPasswordChange={handlePasswordChange}
-        handleLogin={handleLogin}
-      />
-      :
-      <div>
+        loginForm() :
         <div>
-          <span>
-            <p>{user.name} logged-in</p>
-          </span>
-          <span>
-            <Logout handleLogout={handleLogout} />
-          </span>
+          <Logout user={user} handleLogout={handleLogout} />
+          {blogForm()}
         </div>
-        <BlogForm 
-          author={author}
-          title={title}
-          url={url}
-          onAuthorChange={handleAuthorChange}
-          onTitleChange={handleTitleChange}
-          onUrlChange={handleUrlChange}
-          addBlog={addBlog}
-        />
-      </div>
       }
 
       <Blogs blogs={blogs} />

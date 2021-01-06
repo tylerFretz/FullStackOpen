@@ -8,7 +8,7 @@ const Blogs = ({ blogs }) => {
                 blogs
                     .sort((a, b) => b.upvotes - a.upvotes)
                     .map(blog => (
-                        <Blog key={blog.id} blog={blog}/>
+                        <Blog key={blog.id} blog={blog} />
                     ))}
         </div>
     )
