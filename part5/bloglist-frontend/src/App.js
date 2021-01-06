@@ -13,7 +13,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
-  
+
   const handleErrorMessageClose = () => setErrorMessage(null)
 
 
@@ -23,7 +23,7 @@ const App = () => {
     blogService
       .getAll()
       .then(blogs => setBlogs( blogs ))
-      .catch(err => console.log(err))  
+      .catch(err => console.log(err))
   }, [])
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const App = () => {
 
 
   const handleLogin = async userObject => {
-    
+
     try {
       const user = await loginService.login(userObject)
 
@@ -124,7 +124,7 @@ const App = () => {
     try {
       await blogService.update(blogObject.id, blogObject)
       setBlogs(blogs.filter(blog => blog.id !== blogObject.id)
-      .concat(blogObject))
+        .concat(blogObject))
     }
     catch(exception) {
       console.log(exception)
@@ -164,7 +164,7 @@ const App = () => {
               <Blog
                 key={blog.id}
                 blog={blog}
-                upvoteBlog={upvoteBlog} 
+                upvoteBlog={upvoteBlog}
                 deleteBlog={deleteBlog}
                 user={user}
               />

@@ -1,8 +1,8 @@
 module.exports = {
     'env': {
         'browser': true,
-        'commonjs': true,
-        'es2021': true
+        'es6': true,
+        'jest/globals': true
     },
     'extends': [
         'eslint:recommended',
@@ -12,15 +12,16 @@ module.exports = {
         'ecmaFeatures': {
             'jsx': true
         },
-        'ecmaVersion': 12
+        'ecmaVersion': 12,
+        'sourceType': 'module'
     },
     'plugins': [
-        'react'
+        'react', 'jest'
     ],
     'rules': {
         'indent': [
             'warn',
-            4
+            2
         ],
         'linebreak-style': [
             'warn',
@@ -38,13 +39,18 @@ module.exports = {
             'warn',
             { 'vars': 'local', 'args': 'after-used' }
         ],
-        'react/prop-types': [
-            'warn'
-        ],
+        'react/prop-types': 0,
         'object-curly-spacing': [
             'warn',
             'always'
         ],
-        'no-console': 0
+        'no-console': 0,
+        'eqeqeq': 'warn',
+        'no-trailing-spaces': 'warn',
+    },
+    'settings': {
+        'react': {
+            'version': 'detect'
+        }
     }
 }

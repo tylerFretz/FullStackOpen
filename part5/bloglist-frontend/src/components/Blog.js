@@ -60,8 +60,8 @@ const Blog = ({ blog, deleteBlog, upvoteBlog, user }) => {
             </div>
             : <div/>}
         </div>
-      :
-      <div/>
+        :
+        <div/>
       }
     </li>
   )
