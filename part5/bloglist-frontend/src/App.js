@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
-import Blogs from './components/Blogs'
+import Blog from './components/Blog'
 import Logout from './components/Logout'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -102,31 +102,34 @@ const App = () => {
     }
   }
 
-  // const removeBlog = async blogObject => {
-  //   const result = window.confirm(`Delete ${blogObject.title} ?`)
+  const deleteBlog = async blogObject => {
+    try {
+      const result = window.confirm(`Remove ${blogObject.title}?`)
 
-  //   if (result) {
-  //     try {
-  //       const blog = await blogService.remove(blogObject.id)
-  //       setBlogs(blogs.filter(b => b.id !== blogObject.id))
-  //       setErrorMessage(
-  //         {
-  //           body: `Removed ${blogObject.title}`,
-  //           type: 'info'
-  //         }
-  //       )
-  //     }
-  //     catch (exception) {
-  //       setBlogs(blogs.filter(b => b.id !== blogObject.id))
-  //       setErrorMessage(
-  //         {
-  //           body: `${blogObject.title} was already removed`,
-  //           type: 'error'
-  //         }
-  //       )
-  //     }
-  //   }
-  // }
+      if (result) {
+        await blogService.remove(blogObject.id)
+        setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
+      }
+    }
+    catch (err) {
+      setErrorMessage({
+        body: `Oh no ${err}`,
+        type: 'error'
+      })
+    }
+  }
+
+  const upvoteBlog = async blogObject => {
+
+    try {
+      await blogService.update(blogObject.id, blogObject)
+      setBlogs(blogs.filter(blog => blog.id !== blogObject.id)
+      .concat(blogObject))
+    }
+    catch(exception) {
+      console.log(exception)
+    }
+  }
 
   const loginForm = () => (
     <Togglable buttonLabel='login'>
@@ -153,7 +156,21 @@ const App = () => {
         </div>
       }
 
-      <Blogs blogs={blogs} />
+      <ul>
+        {
+          blogs
+            .sort((a, b) => b.upvotes - a.upvotes)
+            .map(blog => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                upvoteBlog={upvoteBlog} 
+                deleteBlog={deleteBlog}
+              />
+            ))
+        }
+      </ul>
+
     </div>
   )
 }
