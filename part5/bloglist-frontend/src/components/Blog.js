@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, deleteBlog, upvoteBlog }) => {
+const Blog = ({ blog, deleteBlog, upvoteBlog, user }) => {
 
   const [showAll, setShowAll] = useState(false)
 
@@ -36,6 +36,7 @@ const Blog = ({ blog, deleteBlog, upvoteBlog }) => {
     })
   }
 
+
   return (
     <li style={blogStyle}>
       <br/>
@@ -53,9 +54,11 @@ const Blog = ({ blog, deleteBlog, upvoteBlog }) => {
           <div>
             Upvotes: {blog.upvotes} <button onClick={upvote}>Like</button>
           </div>
-          <div>
-            <button onClick={removeBlog}>Delete</button>
-          </div>
+          {user !== null && user.id === blog.user.id ?
+            <div>
+              <button onClick={removeBlog}>Delete</button>
+            </div>
+            : <div/>}
         </div>
       :
       <div/>

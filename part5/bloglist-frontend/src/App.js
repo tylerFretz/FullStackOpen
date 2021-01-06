@@ -166,6 +166,7 @@ const App = () => {
                 blog={blog}
                 upvoteBlog={upvoteBlog} 
                 deleteBlog={deleteBlog}
+                user={user}
               />
             ))
         }
