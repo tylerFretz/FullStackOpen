@@ -21,19 +21,19 @@ const LoginForm = ({ handleLogin }) => {
   return (
     <form onSubmit={login}>
       <div>
-            Username: <input type="text" value={username} onChange={handleUsernameChange} />
+            Username: <input id="username" type="text" data-cy="username" value={username} onChange={handleUsernameChange} />
       </div>
       <div>
-            Password: <input type="password" value={password} onChange={handlePasswordChange} />
+            Password: <input id="password" type="password" data-cy="password" value={password} onChange={handlePasswordChange} />
       </div>
       <div>
-        <button type="submit">Login</button>
+        <button id="login-button" type="submit" data-cy="login-button">Login</button>
       </div>
     </form>
   )
 }
 
-LoginForm.PropTypes = {
+LoginForm.propTypes = {
   handleLogin: PropTypes.func.isRequired
 }
 

@@ -1,22 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Blog from './components/Blog'
-import Logout from './components/Logout'
+import NavBar from './components/NavBar'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogService'
 import loginService from './services/loginService'
+import UserContext from './UserContext'
+import ToTopScroller from './components/ToTopScroller'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
+  const toTopScrollerRef = useRef()
 
   const handleErrorMessageClose = () => setErrorMessage(null)
-
-
 
 
   useEffect(() => {
@@ -41,6 +42,32 @@ const App = () => {
     }
   }, [])
 
+  // Handle DOM updates depending on if the login or blogs page is shown
+  useLayoutEffect(() => {
+    const rootStyle = document.documentElement.style
+
+    const handleScroll = () => {
+      const { scrollTop } = document.documentElement
+      const pageHeight = document.documentElement.offsetHeight
+      const percentScrollTop = Math.round((scrollTop / pageHeight) * 100)
+
+      if (!user) return
+
+      if (percentScrollTop > 10) {
+        toTopScrollerRef.current.show()
+      } else {
+        toTopScrollerRef.current.hide()
+      }
+    }
+
+    if (user) {
+      rootStyle.setProperty('--body-bg-color', 'var(--light-color)')
+      window.addEventListener('scroll', handleScroll)
+    } else {
+      rootStyle.setProperty('--body-bg-color', 'var(--primary-color-faded)')
+    }
+  }, [user])
+
 
 
 
@@ -64,7 +91,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = event => {
+  const logout = event => {
     event.preventDefault()
 
     window.localStorage.removeItem('loggedBlogAppUser')
@@ -110,6 +137,13 @@ const App = () => {
         await blogService.remove(blogObject.id)
         setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
       }
+
+      setErrorMessage(
+        {
+          body: `Removed ${blogObject.title}`,
+          type: 'info'
+        }
+      )
     }
     catch (err) {
       setErrorMessage({
@@ -120,11 +154,9 @@ const App = () => {
   }
 
   const upvoteBlog = async blogObject => {
-
     try {
       await blogService.update(blogObject.id, blogObject)
-      setBlogs(blogs.filter(blog => blog.id !== blogObject.id)
-        .concat(blogObject))
+      setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : blogObject))
     }
     catch(exception) {
       console.log(exception)
@@ -145,33 +177,41 @@ const App = () => {
 
   return (
     <div>
-      <h2>Blogs</h2>
-      <Notification message={errorMessage} onClose={handleErrorMessageClose} />
-
-      {user === null ?
-        loginForm() :
+      {!user && (
         <div>
-          <Logout user={user} handleLogout={handleLogout} />
-          {blogForm()}
+          <Notification message={errorMessage} onClose={handleErrorMessageClose} />
+          {loginForm()}
         </div>
-      }
+      )}
 
-      <ul>
-        {
-          blogs
-            .sort((a, b) => b.upvotes - a.upvotes)
-            .map(blog => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                upvoteBlog={upvoteBlog}
-                deleteBlog={deleteBlog}
-                user={user}
-              />
-            ))
-        }
-      </ul>
+      {user && (
+        <div>
+          <UserContext.Provider value={user}>
+            <NavBar handleLogout={logout} />
+            <div>
+              <Notification message={errorMessage} onClose={handleErrorMessageClose} />
+              {blogForm()}
+              <h2>Blogs</h2>
+              <ul>
+                {
+                  blogs
+                    .sort((a, b) => b.upvotes - a.upvotes)
+                    .map(blog => (
+                      <Blog
+                        key={blog.id}
+                        blog={blog}
+                        upvoteBlog={upvoteBlog}
+                        deleteBlog={deleteBlog}
+                      />
+                    ))
+                }
+              </ul>
+            </div>
+          </UserContext.Provider>
 
+          <ToTopScroller ref={toTopScrollerRef} />
+        </div>
+      )}
     </div>
   )
 }
