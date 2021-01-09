@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 import UserContext from '../UserContext'
+import Notification from './Notification'
 
-const NavBar = ({ handleLogout }) => {
+const NavBar = ({ handleLogout, message, onClose }) => {
   const user = useContext(UserContext)
 
   const navStyle = {
@@ -19,9 +20,18 @@ const NavBar = ({ handleLogout }) => {
     <>
       <div className="topnav" style={navStyle}>
         <div style={navItemStyle}>Blog App</div>
-        <div style={navItemStyle}>{user.name} logged in</div>
-        <div style={navItemStyle}>
-          <button type="button" onClick={handleLogout} data-cy="logout-button">Logout</button>
+
+        {user && (
+          <>
+            <div style={navItemStyle}>{user.name} logged in</div>
+            <div style={navItemStyle}>
+              <button type="button" onClick={handleLogout} data-cy="logout-button">Logout</button>
+            </div>
+          </>
+        )}
+
+        <div style ={navItemStyle}>
+          <Notification message={message} onClose={onClose} />
         </div>
       </div>
     </>

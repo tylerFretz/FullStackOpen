@@ -41,20 +41,42 @@
   display: inline;
   color: red;
   background: lightgrey;
-  font-size: 20px;
+  font-size: 15px;
   border-style: solid;
   border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 30px;
+  padding: 5px;
 }
 
 .info {
   display: inline;
   color: green;
   background: lightgrey;
-  font-size: 20px;
+  font-size: 15px;
   border-style: solid;
   border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 30px;
+  padding: 5px;
+}
+
+#blogForm-container {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+.blogForm-label {
+  float: left;
+  margin: 4px 2px;
+}
+
+.blogForm-input {
+  float: right;
+  margin: 2px;
+}
+
+html {
+  background-size: cover;
+  background-color: lightblue;
+  width: 100%;
+  height: auto;
+  position: fixed;
 }

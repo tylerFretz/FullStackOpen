@@ -13,7 +13,6 @@ const Notification = ({ message, onClose }) => {
       <span>
         {message.body}
       </span>
-      <br/>
     </div>
   )
 }

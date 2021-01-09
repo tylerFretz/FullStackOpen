@@ -24,7 +24,7 @@ describe('Blog app', function() {
   })
 
   it('front page can be opened', function() {
-    cy.contains('Blogs')
+    cy.contains('login')
   })
 
   it('user can log in', function() {
@@ -49,6 +49,39 @@ describe('Blog app', function() {
     cy.get('html').should('not.contain', 'TestName logged in')
   })
 
+  it('blogs are ordered according to upvotes', function() {
+    cy.contains('login').click()
+    cy.get('[data-cy=username]').type('Test')
+    cy.get('[data-cy=password]').type('password')
+    cy.get('[data-cy=login-button]').click()
+    cy.wait(500)
+    cy.login ({ username: 'Test', password: 'password' })
+    cy.createBlog({ author: 'author1', title: 'title1', url: 'https://url1.com' })
+    cy.createBlog({ author: 'author2', title: 'title2', url: 'https://url2.com' })
+    cy.createBlog({ author: 'author3', title: 'title3', url: 'https://url3.com' })
+
+    cy.wait(1000)
+
+    cy.get('[data-cy=view-button]').then( buttons => {
+      cy.wrap(buttons).click({ multiple: true })
+    })
+
+    cy.get('ul>li').eq(0)
+      .get('[data-cy=title]')
+      .should('contain', 'title1')
+
+    cy.get('[data-cy=upvote-button]')
+      .then(buttons => {
+        cy.wrap(buttons[2]).click()
+      })
+
+    cy.wait(500)
+
+    cy.get('ul>li').eq(0)
+      .get('[data-cy=title]')
+      .should('contain', 'title3')
+  })
+
   describe('when logged in', function() {
     beforeEach(function() {
       cy.contains('login').click()
@@ -67,7 +100,7 @@ describe('Blog app', function() {
       cy.contains('a blog created by cypress')
     })
 
-    describe('2 blogs exist', function() {
+    describe('2 blogs exist created by 2 different users', function() {
       beforeEach(function() {
         cy.contains('new blog').click()
         cy.get('#author').type('cypress')
@@ -75,25 +108,48 @@ describe('Blog app', function() {
         cy.get('#url').type('https://test.com/asdf')
         cy.get('#addBlog-button').click()
 
-        cy.login({ username: 'Test', password: 'password' })
-        cy.createBlog({ author: 'test1', title: 'test1', url: 'https://test1.com/asdf' })
+        cy.contains('Logout').click()
+
+        cy.contains('login').click()
+        cy.get('[data-cy=username]').type('Test2')
+        cy.get('[data-cy=password]').type('password')
+        cy.get('[data-cy=login-button]').click()
+
+        cy.contains('new blog').click()
+        cy.get('#author').type('cypress2')
+        cy.get('#title').type('a blog created by cypress2')
+        cy.get('#url').type('https://test2.com/asdf')
+        cy.get('#addBlog-button').click()
+        cy.wait(500)
+        cy.reload()
       })
 
       it('a blog can be upvoted', function() {
         cy.contains('view').click()
-        cy.get('[data-cy=upvotes]').should('contain', 'Upvotes: 0')
+        cy.get('[data-cy=upvotes]').should('contain', '0')
         cy.get('[data-cy=upvote-button]').click()
-        cy.get('[data-cy=upvotes]').should('contain', 'Upvotes: 1')
+        cy.get('[data-cy=upvotes]').should('contain', '1')
       })
 
       it('a user that created a blog can delete it', function() {
-        cy.contains('view').click()
+        cy.get('ul>li').eq(1)
+          .contains('view')
+          .click()
+
         cy.get('[data-cy=delete-button]').click()
 
         cy.get('.info')
-          .should('contain', 'Removed a blog created by cypress')
+          .should('contain', 'Removed a blog created by cypress2')
+      })
+
+      it('a user that did not create a blog cant delete it', function() {
+        cy.get('ul>li').eq(0)
+          .contains('view')
+          .click()
+
+        cy.get('.blog')
+          .should('not.contain', 'Delete')
       })
     })
   })
 })
-

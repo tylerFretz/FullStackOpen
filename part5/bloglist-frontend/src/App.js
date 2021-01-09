@@ -3,7 +3,6 @@ import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Blog from './components/Blog'
 import NavBar from './components/NavBar'
-import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogService'
 import loginService from './services/loginService'
@@ -72,12 +71,9 @@ const App = () => {
 
 
   const handleLogin = async userObject => {
-
     try {
       const user = await loginService.login(userObject)
-
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-
       blogService.setToken(user.token)
       setUser(user)
     }
@@ -106,9 +102,7 @@ const App = () => {
   }
 
   const addBlog = async blogObject => {
-
     blogFormRef.current.toggleVisibility()
-
     try {
       const blog = await blogService.create(blogObject)
       setBlogs(blogs.concat(blog))
@@ -153,10 +147,20 @@ const App = () => {
     }
   }
 
-  const upvoteBlog = async blogObject => {
+  const upvoteBlog = async (id) => {
     try {
-      await blogService.update(blogObject.id, blogObject)
-      setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : blogObject))
+      const blogToLike = blogs.find(blog => blog.id === id)
+
+      if (blogToLike) {
+        const updatedBlog = {
+          ...blogToLike,
+          upvotes: blogToLike.upvotes + 1,
+          user: blogToLike.user.id
+        }
+
+        const returnedBlog = await blogService.update(id, updatedBlog)
+        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      }
     }
     catch(exception) {
       console.log(exception)
@@ -176,10 +180,10 @@ const App = () => {
   )
 
   return (
-    <div>
+    <div id="root-container">
       {!user && (
         <div>
-          <Notification message={errorMessage} onClose={handleErrorMessageClose} />
+          <NavBar handleLogout={logout} message={errorMessage} onClose={handleErrorMessageClose} />
           {loginForm()}
         </div>
       )}
@@ -187,9 +191,8 @@ const App = () => {
       {user && (
         <div>
           <UserContext.Provider value={user}>
-            <NavBar handleLogout={logout} />
+            <NavBar handleLogout={logout} message={errorMessage} onClose={handleErrorMessageClose} />
             <div>
-              <Notification message={errorMessage} onClose={handleErrorMessageClose} />
               {blogForm()}
               <h2>Blogs</h2>
               <ul>
@@ -208,7 +211,6 @@ const App = () => {
               </ul>
             </div>
           </UserContext.Provider>
-
           <ToTopScroller ref={toTopScrollerRef} />
         </div>
       )}

@@ -9,13 +9,13 @@ Cypress.Commands.add('login', ({ username, password }) => {
 })
 
 //expects user to be logged in and the user's details to be saved to localStorage.
-Cypress.Commands.add('createBlog', ({ author, title, url }) => {
+Cypress.Commands.add('createBlog', ({ author, title, url, upvotes }) => {
 
 
   cy.request({
     url: 'http://localhost:3003/api/blogs',
     method: 'POST',
-    body: { author, title, url },
+    body: { author, title, url, upvotes },
     headers: {
       'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedBlogappUser')).token}`
     }

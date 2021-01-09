@@ -23,14 +23,7 @@ const Blog = ({ blog, deleteBlog, upvoteBlog }) => {
 
   const upvote = event => {
     event.preventDefault()
-    upvoteBlog({
-      author: blog.author,
-      title: blog.title,
-      url: blog.url,
-      upvotes: blog.upvotes + 1,
-      id: blog.id,
-      user: blog.user.id || blog.user
-    })
+    upvoteBlog(blog.id)
   }
 
   const removeBlog = event => {
