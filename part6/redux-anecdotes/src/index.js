@@ -1,12 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore } from 'redux'
 import { Provider } from 'react-redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
 import App from './App'
-import anecdoteReducer from './reducers/anecdoteReducer'
-
-const store = createStore(anecdoteReducer, composeWithDevTools())
+import store from './store'
 
 ReactDOM.render(
   <Provider store={store}>
