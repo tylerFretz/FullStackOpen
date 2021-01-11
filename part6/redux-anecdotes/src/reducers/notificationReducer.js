@@ -1,8 +1,4 @@
-const initialState = {
-    message: 'Add some anecdotes'
-}
-
-const notificationReducer = (state = initialState, action) => {
+const notificationReducer = (state = '', action) => {
     switch(action.type) {
         case 'SET_NOTIFICATION':
         case 'CLEAR_NOTIFICATION':
@@ -13,13 +9,23 @@ const notificationReducer = (state = initialState, action) => {
 }
 
 
-export const setNotification = (message) => {
-  return {
-      type: 'SET_NOTIFICATION',
-      data: {
-        message: message
-      }
-  }
+export const setNotification = (message, seconds) => {
+    return async dispatch => {
+        dispatch({
+            type: 'SET_NOTIFICATION',
+            data: {
+                message: message
+            }
+        })
+        setTimeout(() => {
+            dispatch({
+                type: 'CLEAR_NOTIFICATION',
+                data: {
+                    message: ''
+                }
+            })
+        }, seconds * 1000)
+    }
 }
 
 export const clearNotification = () => {
