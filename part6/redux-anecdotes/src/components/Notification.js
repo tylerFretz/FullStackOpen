@@ -1,14 +1,15 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { clearNotification } from '../reducers/notificationReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 const Notification = () => {
   const notification = useSelector(state => state.notification.message)
+  const timerId = useSelector(state => state.notification.id)
   const dispatch = useDispatch()
 
   const clear = event => {
     event.preventDefault()
-    dispatch(clearNotification())
+    dispatch(setNotification('', 0, timerId))
   }
 
   const style = {
