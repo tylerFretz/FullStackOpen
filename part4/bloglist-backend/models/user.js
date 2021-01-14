@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
         }
     ]
 })
+
 // Apply the uniqueValidator plugin to userSchema.
 userSchema.plugin(uniqueValidator)
 
