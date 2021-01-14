@@ -12,7 +12,6 @@ const anecdoteReducer = (state = [], action) => {
       return action.data
     default:
       return state
-    
   }
 }
 
