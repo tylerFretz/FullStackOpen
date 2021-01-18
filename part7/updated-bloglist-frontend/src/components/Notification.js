@@ -1,20 +1,41 @@
 import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { clearNotification } from '../store/actions/notificationActions'
 
 
-const Notification = ({ message, onClose }) => {
-  if (message === null) {
-    return null
+const Notification = () => {
+  const notification = useSelector(state => state.notification)
+  const dispatch = useDispatch()
+
+  const clear = event => {
+    event.preventDefault()
+    dispatch(clearNotification())
   }
-  return (
-    <div className={message.type}>
-      <span>
-        <button onClick={() => onClose()}>X</button>
-      </span>
-      <span>
-        {message.body}
-      </span>
-    </div>
-  )
+
+  const errorStyle = {
+    border: 'solid',
+    padding: 10,
+    borderWidth: 1,
+    backgroundColor: 'red'
+  }
+
+  const successStyle = {
+    border: 'solid',
+    padding: 10,
+    borderWidth: 1,
+    backgroundColor: 'green'
+  }
+
+  if (notification) {
+    return (
+      <div style={notification.isError ? errorStyle : successStyle}>
+        <button type="button" onClick={clear}>X</button>
+        {notification.message}
+      </div>
+    )
+  }
+
+  return null
 }
 
 export default Notification

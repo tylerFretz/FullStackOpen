@@ -1,26 +1,30 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import { createBlog } from '../store/actions/blogActions'
+import { useField } from '../hooks'
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = () => {
+  const dispatch = useDispatch()
+  const history = useHistory()
 
-  const [author, setAuthor] = useState('')
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const handleAuthorChange = event => setAuthor(event.target.value)
-  const handleTitleChange = event => setTitle(event.target.value)
-  const handleUrlChange = event => setUrl(event.target.value)
+  const author = useField('text')
+  const title = useField('text')
+  const url = useField('text')
 
   const addBlog = event => {
     event.preventDefault()
-    createBlog({
-      author: author,
-      title: title,
-      url: url,
-      upvotes: 0
-    })
-    setAuthor('')
-    setTitle('')
-    setUrl('')
+
+    const blogObject = {
+      author: author.value,
+      title: title.value,
+      url: url.value
+    }
+
+    dispatch(createBlog(blogObject))
+    history.push('/')
   }
+
   return (
     <div id="blogForm-container">
       <h2>Create new blog</h2>
@@ -30,7 +34,7 @@ const BlogForm = ({ createBlog }) => {
             Author:
           </span>
           <span className="blogForm-input">
-            <input id="author" type="text" value={author} onChange={handleAuthorChange} />
+            <input {...author} reset="" placeholder="Enter author name" />
           </span>
         </div>
         <div>
@@ -38,7 +42,7 @@ const BlogForm = ({ createBlog }) => {
             Title:
           </span>
           <span className="blogForm-input">
-            <input id="title" type="text" value={title} onChange={handleTitleChange} />
+            <input {...title} reset="" placeholder="Enter title" />
           </span>
         </div>
         <div>
@@ -46,11 +50,11 @@ const BlogForm = ({ createBlog }) => {
             URL:
           </span>
           <span className="blogForm-input">
-            <input id="url" type="text" value={url} onChange={handleUrlChange} />
+            <input {...url} reset="" placeholder="Enter url" />
           </span>
         </div>
         <div>
-          <button id="addBlog-button" type="submit">Add blog</button>
+          <button data-cy="addBlog-button" type="submit">Add blog</button>
         </div>
       </form>
     </div>

@@ -1,40 +1,44 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import { login } from '../store/actions/loginActions'
+import { useField } from '../hooks'
 
-const LoginForm = ({ handleLogin }) => {
+const LoginForm = () => {
+  const dispatch = useDispatch()
+  const history = useHistory()
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const username = useField('text')
+  const password = useField('password')
 
-  const handleUsernameChange = event => setUsername(event.target.value)
-  const handlePasswordChange = event => setPassword(event.target.value)
-
-  const login = event => {
+  const handleLogin = event => {
     event.preventDefault()
-    handleLogin({
-      username: username,
-      password: password
-    })
-    setUsername('')
-    setPassword('')
-  }
-  return (
-    <form onSubmit={login}>
-      <div>
-            Username: <input id="username" type="text" data-cy="username" value={username} onChange={handleUsernameChange} />
-      </div>
-      <div>
-            Password: <input id="password" type="password" data-cy="password" value={password} onChange={handlePasswordChange} />
-      </div>
-      <div>
-        <button id="login-button" type="submit" data-cy="login-button">Login</button>
-      </div>
-    </form>
-  )
-}
 
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired
+    const credentials = {
+      username: username.value,
+      password: password.value
+    }
+
+    dispatch(login(credentials))
+    history.push('/')
+  }
+
+  return (
+    <>
+      <h2>LogIn</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+              Username: <input data-cy="username" {...username} reset="" placeholder="Enter username" />
+        </div>
+        <div>
+              Password: <input data-cy="password" {...password} reset="" placeholder="Enter password" />
+        </div>
+        <div>
+          <button type="submit" data-cy="login-button">Login</button>
+        </div>
+      </form>
+    </>
+  )
 }
 
 export default LoginForm

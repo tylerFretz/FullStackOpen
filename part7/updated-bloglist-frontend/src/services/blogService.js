@@ -7,6 +7,17 @@ const setToken = newToken => {
   token = `bearer ${newToken}`
 }
 
+const getConfig = config => {
+  const defaultConfig = {
+    headers: { Authorization: token }
+  }
+
+  return {
+    ...defaultConfig,
+    ...config
+  }
+}
+
 const getAll = async () => {
   const request = axios.get(baseUrl)
   const response = await request
@@ -14,27 +25,19 @@ const getAll = async () => {
 }
 
 const create = async newObject => {
-  const config = {
-    headers: { Authorization: token }
-  }
-
-  const request = axios.post(baseUrl, newObject, config)
+  const request = axios.post(baseUrl, newObject, getConfig())
   const response = await request
   return response.data
 }
 
-const update = async (id, newObject) => {
-  const request = axios.put(`${baseUrl}/${id}`, newObject)
+const update = async blog => {
+  const request = axios.put(`${baseUrl}/${blog.id}`, blog, getConfig())
   const response = await request
   return response.data
 }
 
 const remove = async id => {
-  const config = {
-    headers: { Authorization: token }
-  }
-
-  const request = axios.delete(`${baseUrl}/${id}`, config)
+  const request = axios.delete(`${baseUrl}/${id}`, getConfig())
   const response = await request
   return response.data
 }
