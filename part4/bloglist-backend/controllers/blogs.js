@@ -84,6 +84,7 @@ blogsRouter.put('/:id', async (req, res) => {
     const { upvotes } = req.body
 
     const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, { upvotes }, { new: true, runValidators: true })
+        .populate('user', { username: 1, name: 1, id: 1 })
     res.status(201).json(updatedBlog)
 })
 
@@ -100,6 +101,7 @@ blogsRouter.put('/:id/comments', async (req, res) => {
         req.params.id,
         { $push: { comments: { body: req.body.comment, date:  new Date() } } },
         { new: true, runValidators: true })
+        .populate('user', { username: 1, name: 1, id: 1 })
 
     res.status(requestBlog ? 200 : 404).json(requestBlog)
 })
