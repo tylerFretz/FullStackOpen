@@ -6,7 +6,8 @@ const blogSchema = new mongoose.Schema({
     title: { type: String },
     url: { type: String, required: true, unique: true, match: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/ },
     upvotes: { type: Number, default: 0 },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    comments: [{ body: String, date: Date }]
 })
 
 // Apply the uniqueValidator plugin to blogSchema.
@@ -18,6 +19,7 @@ blogSchema.set('toJSON', {
         returnedObject.id = returnedObject._id.toString()
         delete returnedObject._id
         delete returnedObject.__v
+        delete returnedObject.comments._id
     }
 })
 

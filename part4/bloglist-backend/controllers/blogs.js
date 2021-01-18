@@ -13,7 +13,7 @@ blogsRouter.get('/info', async (req, res) => {
 
 // Get all blogs
 blogsRouter.get('/', async (req, res) => {
-    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
     res.json(blogs)
 })
 
@@ -86,5 +86,23 @@ blogsRouter.put('/:id', async (req, res) => {
     const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, { upvotes }, { new: true, runValidators: true })
     res.status(201).json(updatedBlog)
 })
+
+
+// Add comment to existing blog
+// comments are anonymous
+blogsRouter.put('/:id/comments', async (req, res) => {
+
+    if (!req.body.comment) {
+        res.status(400).json({ error : 'comment missing' })
+    }
+
+    const requestBlog = await Blog.findByIdAndUpdate(
+        req.params.id,
+        { $push: { comments: { body: req.body.comment, date:  new Date() } } },
+        { new: true, runValidators: true })
+
+    res.status(requestBlog ? 200 : 404).json(requestBlog)
+})
+
 
 module.exports = blogsRouter
