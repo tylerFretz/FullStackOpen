@@ -1,4 +1,5 @@
 import React from 'react'
+import { Form, Button } from 'react-bootstrap'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import { createBlog } from '../store/actions/blogActions'
@@ -26,38 +27,24 @@ const BlogForm = () => {
   }
 
   return (
-    <div id="blogForm-container">
-      <h2>Create new blog</h2>
-      <form className="blogForm" onSubmit={addBlog}>
-        <div>
-          <span className="blogForm-label">
-            Author:
-          </span>
-          <span className="blogForm-input">
-            <input {...author} reset="" placeholder="Enter author name" />
-          </span>
-        </div>
-        <div>
-          <span className="blogForm-label">
-            Title:
-          </span>
-          <span className="blogForm-input">
-            <input {...title} reset="" placeholder="Enter title" />
-          </span>
-        </div>
-        <div>
-          <span className="blogForm-label">
-            URL:
-          </span>
-          <span className="blogForm-input">
-            <input {...url} reset="" placeholder="Enter url" />
-          </span>
-        </div>
-        <div>
-          <button data-cy="addBlog-button" type="submit">Add blog</button>
-        </div>
-      </form>
-    </div>
+    <Form onSubmit={addBlog}>
+      <Form.Group controlId="formGroupTitlw">
+        <Form.Label>Title</Form.Label>
+        <Form.Control {...title} reset="" placeholder='Enter title' required />
+      </Form.Group>
+
+      <Form.Group controlId="formGroupAuthor">
+        <Form.Label>Author</Form.Label>
+        <Form.Control {...author} reset="" placeholder='Enter author name' />
+      </Form.Group>
+
+      <Form.Group controlId="formGroupUrl">
+        <Form.Label>URL</Form.Label>
+        <Form.Control {...url} reset="" placeholder="Enter url" required />
+      </Form.Group>
+
+      <Button variant="primary" type="submit">Submit</Button>
+    </Form>
   )
 }
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { InputGroup, Button, FormControl, ListGroup } from 'react-bootstrap'
 import { format, compareDesc } from 'date-fns'
 import { useSelector, useDispatch } from 'react-redux'
 import { useRouteMatch, useHistory } from 'react-router-dom'
@@ -15,7 +16,10 @@ const BlogDetails = () => {
     ? useSelector(state => state.blogs.find(blog => blog.id === blogMatch.params.id))
     : null
 
-  if (!blog) return null
+  if (!blog) {
+    history.push('/')
+    return null
+  }
 
   const belongsToUser = () => {
     const currentUser = useSelector(state => state.loggedInUser.username)
@@ -40,6 +44,7 @@ const BlogDetails = () => {
     event.preventDefault()
 
     if (comment.value) {
+      comment.reset()
       dispatch(addComment(blog.id, comment.value))
     }
   }
@@ -59,20 +64,22 @@ const BlogDetails = () => {
       <p>Added by {blog.user.username}</p>
       <h3>Comments</h3>
       <div>
-        <input {...comment} reset="" placeholder='add comment' />
-        <button onClick={handleComment}>submit</button>
+        <label htmlFor="comment">Add comment</label>
+        <InputGroup>
+          <FormControl {...comment} reset="" id="comment" as="textarea" placeholder="...add comment" />
+          <InputGroup.Append>
+            <Button variant="secondary" onClick={handleComment}>Submit</Button>
+          </InputGroup.Append>
+        </InputGroup>
       </div>
-      <ul>
+      <ListGroup variant="flush">
         {blog.comments.sort((a, b) =>
           compareDesc(new Date(a.date), new Date(b.date))
         )
           .map(c => (
-            <li key={c._id}>
-              <p>{c.body}</p>
-              <p>added - {format( new Date(c.date), 'PPpp')}</p>
-            </li>
+            <ListGroup.Item key={c._id}>{c.body} <small>added {format( new Date(c.date), 'PPpp')}</small></ListGroup.Item>
           ))}
-      </ul>
+      </ListGroup>
     </>
   )
 }

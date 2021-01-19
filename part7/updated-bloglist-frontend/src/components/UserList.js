@@ -11,7 +11,7 @@ const UserList = () => {
     dispatch(initializeUsers())
   }, [dispatch])
 
-  const users = useSelector(state => state.users)
+  const users = useSelector(state => state.users).sort((a, b) => b.blogs.length - a.blogs.length)
 
   return (
     <>

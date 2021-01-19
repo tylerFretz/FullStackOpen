@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { initializeBlogs } from './store/actions/blogActions'
 import { setUser } from './store/actions/loginActions'
 
-import NavBar from './components/NavBar'
+import Navigation from './components/Navigation'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -28,8 +28,8 @@ const App = () => {
 
 
   return (
-    <div id='root-container'>
-      <NavBar />
+    <div className='container'>
+      <Navigation />
       <Notification />
 
       <Switch>
