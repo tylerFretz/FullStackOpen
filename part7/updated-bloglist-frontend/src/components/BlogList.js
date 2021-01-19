@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import Blog from './Blog'
 
 const BlogList = () => {
-  const blogs = useSelector(state => state.blogs)
+  const blogs = useSelector(state => state.blogs).sort((a, b) => b.upvotes - a.upvotes)
 
   return (
     <>

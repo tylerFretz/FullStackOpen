@@ -14,8 +14,6 @@ export const login = credentials => {
         type: 'login/loggedIn',
         payload: loggedInUser
       })
-
-      console.log(window.localStorage.getItem('loggedInUser'))
     }
     catch (err) {
       dispatch(setError(err.response.data.error, 5))

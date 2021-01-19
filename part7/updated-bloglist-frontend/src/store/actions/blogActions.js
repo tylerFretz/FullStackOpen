@@ -33,7 +33,7 @@ export const upvoteBlog = blog => {
     try {
       const updatedBlog = await blogService.update(blog)
       dispatch({
-        type: 'blogs/blogUpvoted',
+        type: 'blogs/blogUpdated',
         payload: updatedBlog
       })
       dispatch(setSuccess(`Upvoted ${updatedBlog.title}!`, 5))
@@ -53,6 +53,22 @@ export const deleteBlog = blog => {
         payload: deletedBlog
       })
       dispatch(setSuccess(`Deleted ${blog.title}`, 5))
+    }
+    catch (err) {
+      dispatch(setError(err.response.data.error, 5,))
+    }
+  }
+}
+
+export const addComment = (id, comment) => {
+  return async dispatch => {
+    try {
+      const updatedBlog = await blogService.addComment(id, comment)
+      dispatch({
+        type: 'blogs/blogUpdated',
+        payload: updatedBlog
+      })
+      dispatch(setSuccess('Comment Added!'))
     }
     catch (err) {
       dispatch(setError(err.response.data.error, 5,))

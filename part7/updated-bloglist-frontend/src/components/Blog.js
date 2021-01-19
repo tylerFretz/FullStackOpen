@@ -14,7 +14,8 @@ const Blog = ({ blog }) => {
 
   return (
     <li className="blog" style={blogStyle}>
-      <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link>
+      <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author} </Link>
+      -- {blog.upvotes} upvotes
     </li>
   )
 }
