@@ -16,7 +16,7 @@ const Authors = (props) => {
     if (result.data) {
       setAuthors(result.data.allAuthors)
     }
-  }, [result])
+  }, [result.data])
 
   const handleNameChange = event => {
     event.preventDefault()
