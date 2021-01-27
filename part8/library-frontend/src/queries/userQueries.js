@@ -11,10 +11,10 @@ export const GET_AUTH_USER = gql`
 `
 
 export const LOGIN = gql`
-    mutation login($username: String!) {
+    mutation login($username: String!, $password: String!) {
         login(
             username: $username,
-            password: password
+            password: $password
         ) {
             value
         }

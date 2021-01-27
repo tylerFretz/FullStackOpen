@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
+
 import { GET_AUTH_USER } from '../queries/userQueries'
 
 const useAuthUser = () => {
-    const [authStatus, setAuthStatus] = useState('')
+    const [authStatus, setAuthStatus] = useState({
+        user: null,
+        hasSyncAuth: false
+    })
 
     const getAuthUser = useQuery(GET_AUTH_USER)
 
@@ -11,7 +15,7 @@ const useAuthUser = () => {
         const { called, networkStatus, data } = getAuthUser
         if ( called && networkStatus > 6 ) {
             const authUser = data ? data.me : null
-            setAuthStatus(authUser)
+            setAuthStatus({ user: authUser, hasSyncAuth: true })
         }
     }, [getAuthUser])
 

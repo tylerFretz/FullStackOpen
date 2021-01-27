@@ -1,37 +1,43 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { Switch, Route } from "react-router-dom"
+
+import useAuthUser from './hooks/useAuthUser'
+
+import ModalSpinner from './components/ModalSpinner'
+import Navigation from './components/Navigation'
+import Notifications from './components/Notifications'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import BookForm from './components/BookForm'
 import LoginForm from './components/LoginForm'
 
 const App = () => {
-  const [page, setPage] = useState('authors')
+  const { hasSyncAuth } = useAuthUser()
+
+
+  if (!hasSyncAuth) 
+    return <ModalSpinner />
 
   return (
     <div>
-      <div>
-        <button onClick={() => setPage('authors')}>authors</button>
-        <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('add')}>add book</button>
-        <button onClick={() => setPage('login')}>login</button>
+      <Navigation />
+      <Notifications />
+      <div className='container'>
+        <Switch>
+          <Route path='/' exact>
+            <Authors />
+          </Route>
+          <Route path='/login' exact>
+            <LoginForm />
+          </Route>
+          <Route path='/books' exact>
+            <Books />
+          </Route>
+          <Route path='/new' exact>
+            <BookForm />
+          </Route>
+        </Switch>
       </div>
-
-      <Authors
-        show={page === 'authors'}
-      />
-
-      <Books
-        show={page === 'books'}
-      />
-
-      <BookForm
-        show={page === 'add'}
-      />
-
-      <LoginForm
-        show={page === 'login'}
-      />
-      
     </div>
   )
 }

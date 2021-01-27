@@ -1,79 +1,56 @@
 import React, { useState, useEffect } from 'react'
-import { useQuery, useMutation } from '@apollo/client'
-import { ALL_AUTHORS, EDIT_BIRTH_YEAR } from '../queries/authorQueries'
+import { useQuery } from '@apollo/client'
+import { Helmet } from 'react-helmet-async'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Spinner from 'react-bootstrap/Spinner'
 
-const Authors = (props) => {
-  const [ name, setName ] = useState('')
-  const [ born, setBorn ] = useState(null)
+import { ALL_AUTHORS } from '../queries/authorQueries'
+
+import AuthorsTable from './AuthorsTable'
+import AuthorsForm from './AuthorsForm'
+
+const Authors = () => {
   const [ authors, setAuthors ] = useState([])
-  const [ editBirthYear ] = useMutation(EDIT_BIRTH_YEAR, {
-    refetchQueries: [ { query: ALL_AUTHORS } ]
-  })
-
-  let result = useQuery(ALL_AUTHORS)
+  const allAuthors = useQuery(ALL_AUTHORS)
 
   useEffect(() => {
-    if (result.data) {
-      setAuthors(result.data.allAuthors)
+    const { called, networkStatus, data } = allAuthors
+    if (called && networkStatus > 6) {
+      const newAuthors = data ? data.allAuthors : authors
+      setAuthors(newAuthors)
     }
-  }, [result.data])
+  }, [authors, allAuthors])
 
-  const handleNameChange = event => {
-    event.preventDefault()
-
-    setName(event.target.value)
-  }
-
-  const submit = event => {
-    event.preventDefault()
-
-    editBirthYear({ variables: { name, born } })
-
-    setBorn('')
-  }
-
-
-  if (!props.show) {
-    return null
-  }
 
   return (
-    <div>
-      <h2>authors</h2>
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>
-              born
-            </th>
-            <th>
-              books
-            </th>
-          </tr>
-          {authors.map(a =>
-            <tr key={a.name}>
-              <td>{a.name}</td>
-              <td>{a.born}</td>
-              <td>{a.bookCount}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <>
+      <Helmet>
+        <title>GraphQL Library | Home</title>
+      </Helmet>
 
-      <h3>Set birthyear</h3>
-      <form onSubmit={submit}>
-        <select value={name} onChange={handleNameChange}>
-          {authors.map(a => (
-            <option value={a.name}>{a.name}</option>
-          ))}
-        </select>
-        <div>
-          born <input value={born} onChange={({ target }) => setBorn(parseInt(target.value))} />
-        </div>
-        <button type="submit">update author</button>
-      </form>
-    </div>
+      <Container>
+        <Row className='my-4'>
+          <Col>
+            <h1 className="d-inline h2 mr-2">Authors</h1>
+            {allAuthors.loading && (
+              <Spinner variant="info" animation="grow" role="status" size="sm">
+                <span className='sr-only'>Loading...</span>
+              </Spinner>
+            )}
+            <hr />
+            
+            {authors.length > 0 && (
+              <>
+                <AuthorsForm authors={authors} />
+                <AuthorsTable authors={authors} />
+              </>
+            )}
+          </Col>
+        </Row>
+      </Container>
+    </>
   )
 }
 

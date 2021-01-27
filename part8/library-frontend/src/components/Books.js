@@ -1,48 +1,52 @@
 import React, { useState, useEffect } from 'react'
-import { useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
+import { Helmet } from 'react-helmet-async'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Spinner from 'react-bootstrap/Spinner'
+
 import { ALL_BOOKS } from '../queries/bookQueries'
+import BooksTable from './BooksTable'
 
-const Books = (props) => {
+const Books = () => {
   const [ books, setBooks ] = useState([])
-
-  let result = useQuery(ALL_BOOKS)
+  const [ genre, setGenre] = useState(null)
+  const [getAllBooks, getAllBooksResults] = useLazyQuery(ALL_BOOKS)
 
   useEffect(() => {
-    if (result.data) {
-      setBooks(result.data.allBooks)
+    getAllBooks({ variables: genre })
+  }, [genre, getAllBooks])
+
+  useEffect(() => {
+    const { called, data, networkStatus } = getAllBooksResults
+    if (called && networkStatus > 6) {
+      const books = data ? data.allBooks : []
+      setBooks(books)
     }
-  }, [result])
-
-
-  if (!props.show) {
-    return null
-  }
+  }, [getAllBooksResults])
 
   return (
-    <div>
-      <h2>books</h2>
+    <>
+      <Helmet>
+        <title>GraphQL Library | Books</title>
+      </Helmet>
+      <Container>
+        <Row className='my-4'>
+          <Col>
+            <h1 className='d-inline h2 mr-2'>Books</h1>
+            {getAllBooksResults.loading && (
+              <Spinner animation='grow' variant='info' role='status' size='sm'>
+                <span className='sr-only'>Loading...</span>
+              </Spinner>
+            )}
+            <hr />
 
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>
-              author
-            </th>
-            <th>
-              published
-            </th>
-          </tr>
-          {books.map(a =>
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author}</td>
-              <td>{a.published}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+            {books.length > 0 && <BooksTable books={books} />}
+          </Col>
+        </Row>
+      </Container>
+    </>
   )
 }
 

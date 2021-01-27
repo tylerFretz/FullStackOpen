@@ -1,7 +1,10 @@
 const { ApolloServer, gql, UserInputError, AuthenticationError } = require('apollo-server')
+
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+
 const config = require('./utils/config')
+
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
@@ -165,7 +168,8 @@ const resolvers = {
 				})
 			}
 
-			return book.populate('author')
+			const savedBook = await book.populate('author').execPopulate()
+			return savedBook
 		},
 
 		editBirthYear: async (root, args, { currentUser }) => {
@@ -237,10 +241,6 @@ const server = new ApolloServer({
 			const decodedToken = jwt.verify(
 				auth.substring(7), config.SECRET
 			)
-
-			console.log('----------------')
-			console.log(decodedToken)
-			console.log('----------------')
 
 			const currentUser = await User.findById(decodedToken.id)
 			return { currentUser }
