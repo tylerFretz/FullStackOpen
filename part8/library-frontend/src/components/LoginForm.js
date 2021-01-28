@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 import { useHistory, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Helmet } from 'react-helmet-async'
 
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
@@ -69,56 +68,50 @@ const LoginForm = () => {
     )
 
     return (
-        <>
-            <Helmet>
-                <title>GraphQL Library | Login</title>
-            </Helmet>
-            
-            <Form onSubmit={handleSubmit(loginUser)}>
-                <Form.Group controlId={seed('username')}>
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control 
-                        type='text'
-                        ref={register({ required: 'Please enter username' })}
-                        name='username'
-                        placeholder='Enter Username'
-                        isInvalid={!!errors.username}
-                    />
+        <Form onSubmit={handleSubmit(loginUser)}>
+            <Form.Group controlId={seed('username')}>
+                <Form.Label>Username</Form.Label>
+                <Form.Control 
+                    type='text'
+                    ref={register({ required: 'Please enter username' })}
+                    name='username'
+                    placeholder='Enter Username'
+                    isInvalid={!!errors.username}
+                />
 
-                    <Form.Control.Feedback type='invalid'>
-                        {errors.username && errors.username.message}
-                    </Form.Control.Feedback>
-                </Form.Group>
+                <Form.Control.Feedback type='invalid'>
+                    {errors.username && errors.username.message}
+                </Form.Control.Feedback>
+            </Form.Group>
 
-                <Form.Group controlId={seed('password')}>
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        type='password'
-                        ref={register({ required: 'Please enter password' })}
-                        name='password'
-                        placeholder='Enter password'
-                        isInvalid={!!errors.password}
-                    />
+            <Form.Group controlId={seed('password')}>
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                    type='password'
+                    ref={register({ required: 'Please enter password' })}
+                    name='password'
+                    placeholder='Enter password'
+                    isInvalid={!!errors.password}
+                />
 
-                    <Form.Control.Feedback type='invalid'>
-                        {errors.password && errors.password.message}
-                    </Form.Control.Feedback>
-                </Form.Group>
+                <Form.Control.Feedback type='invalid'>
+                    {errors.password && errors.password.message}
+                </Form.Control.Feedback>
+            </Form.Group>
 
-                <Form.Group>
-                    <Button type='submit' size='lg' disabled={isSubmitting} block>
-                        <>
-                            {!isSubmitting && <span className='text-uppercase'>Login</span>}
-                            {isSubmitting && (
-                                <Spinner animation='border' role='status'>
-                                    <span className='sr-only'>Logging in...</span>
-                                </Spinner>
-                            )}
-                        </>
-                    </Button>
-                </Form.Group>
-            </Form>
-        </>
+            <Form.Group>
+                <Button type='submit' size='lg' disabled={isSubmitting} block>
+                    <>
+                        {!isSubmitting && <span className='text-uppercase'>Login</span>}
+                        {isSubmitting && (
+                            <Spinner animation='border' role='status'>
+                                <span className='sr-only'>Logging in...</span>
+                            </Spinner>
+                        )}
+                    </>
+                </Button>
+            </Form.Group>
+        </Form>
     )
 }
 

@@ -9,7 +9,8 @@ import Notifications from './components/Notifications'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import BookForm from './components/BookForm'
-import LoginForm from './components/LoginForm'
+import Login from './components/Login'
+import Recommendations from './components/Recommendations'
 
 const App = () => {
   const { hasSyncAuth } = useAuthUser()
@@ -22,19 +23,22 @@ const App = () => {
     <div>
       <Navigation />
       <Notifications />
-      <div className='container'>
+      <div>
         <Switch>
           <Route path='/' exact>
             <Authors />
           </Route>
           <Route path='/login' exact>
-            <LoginForm />
+            <Login />
           </Route>
           <Route path='/books' exact>
             <Books />
           </Route>
           <Route path='/new' exact>
             <BookForm />
+          </Route>
+          <Route path='/recommendations' exact>
+            <Recommendations />
           </Route>
         </Switch>
       </div>

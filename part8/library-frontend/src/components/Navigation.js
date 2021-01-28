@@ -56,6 +56,14 @@ const Navigation = () => {
                                 >
                                     <FontAwesomeIcon icon='plus-circle' /> Add Book
                                 </Nav.Link>
+                                <Nav.Link
+                                    to='/recommendations'
+                                    as={Link}
+                                    active={pathname === '/recommendations'}
+                                    className='mr-2'
+                                >
+                                    <FontAwesomeIcon icon='star' /> Recommendations
+                                </Nav.Link>
                             </>
                         )}
                     </Nav>
