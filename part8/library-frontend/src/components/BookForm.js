@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { useMutation } from '@apollo/client'
+import { useMutation, useApolloClient } from '@apollo/client'
 import { Redirect, useLocation } from 'react-router-dom'
 import { useUIDSeed, uid } from 'react-uid'
 import * as yup from 'yup'
@@ -13,7 +13,6 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
 import Spinner from 'react-bootstrap/Spinner'
 
-import { ALL_AUTHORS } from '../queries/authorQueries'
 import { ALL_BOOKS, ADD_BOOK } from '../queries/bookQueries'
 
 import { resolveApolloErrors } from '../helpers/errorHelper'
@@ -41,6 +40,21 @@ const BookForm = () => {
     const { pathname } = useLocation()
     const validationResolver = useYupValidationResolver(validationSchema)
     const notificationHelper = useNotification()
+    const client = useApolloClient()
+
+    const updateCacheWith = (addedBook) => {
+      const includedIn = (set, object) =>
+        set.map(b => b.id).includes(object.id)
+
+      const dataInStore = client.readQuery({ query: ALL_BOOKS })
+
+      if (dataInStore && !includedIn(dataInStore.allBooks, addedBook)) {
+        client.writeQuery({
+          query: ALL_BOOKS,
+          data: { allBooks : dataInStore.allBooks.concat(addedBook) }
+        })
+      }
+    }
 
     const { register, handleSubmit, getValues, setValue, errors, formState, reset } = useForm({
         mode: 'onBlur',
@@ -51,10 +65,12 @@ const BookForm = () => {
     const { touched, isSubmitting } = formState
 
     const [ addBook, addBookResults ] = useMutation(ADD_BOOK, {
-        refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS } ],
         onError: (err) => {
             const errorsToDisplay = resolveApolloErrors(err)
             notificationHelper.addMultiple(errorsToDisplay, 'error', 5000)
+        },
+        update: (store, response) => {
+          updateCacheWith(response.data.addBook)
         }
     })
 

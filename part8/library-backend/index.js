@@ -1,13 +1,14 @@
-const { ApolloServer, gql, UserInputError, AuthenticationError } = require('apollo-server')
+const { ApolloServer, gql, UserInputError, AuthenticationError, PubSub } = require('apollo-server')
 
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
+const { createBookCountLoader } = require('./loaders/bookCountLoader')
 const config = require('./utils/config')
-
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
+const pubsub = new PubSub()
 
 console.log('connecting to', config.MONGODB_URI)
 
@@ -81,6 +82,10 @@ const typeDefs = gql`
         password: String!
       ): Token
   }
+
+  type Subscription {
+	  bookAdded: Book!
+  }
 `
 
 const resolvers = {
@@ -124,11 +129,8 @@ const resolvers = {
 	},
 
 	Author: {
-		bookCount: async (root) => {
-			const books = await Book.find({})
-			return books.reduce((count, book) => {
-				return book.author.toString() === root.id ? count + 1 : count
-			}, 0)
+		bookCount: async ({ id }, args, { bookCountLoader }) => {
+			return bookCountLoader.load(id.toString())
 		}
 	},
 
@@ -169,6 +171,9 @@ const resolvers = {
 			}
 
 			const savedBook = await book.populate('author').execPopulate()
+
+			pubsub.publish('BOOK_ADDED', { bookAdded: savedBook })
+
 			return savedBook
 		},
 
@@ -229,6 +234,12 @@ const resolvers = {
 
 			return { value: jwt.sign(userForToken, config.SECRET) }
 		}
+	},
+
+	Subscription: {
+		bookAdded: {
+			subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+		}
 	}
 }
 
@@ -236,18 +247,20 @@ const server = new ApolloServer({
 	typeDefs,
 	resolvers,
 	context: async ({ req }) => {
+		const bookCountLoader = createBookCountLoader()
+
 		const auth = req ? req.headers.authorization : null
 		if (auth && auth.toLowerCase().startsWith('bearer ')) {
-			const decodedToken = jwt.verify(
-				auth.substring(7), config.SECRET
-			)
-
+			const decodedToken = jwt.verify(auth.substring(7), config.SECRET)
 			const currentUser = await User.findById(decodedToken.id)
-			return { currentUser }
+			return { bookCountLoader, currentUser }
 		}
+
+		return { bookCountLoader }
 	}
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
 	console.log(`Server ready at ${url}`)
+	console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })

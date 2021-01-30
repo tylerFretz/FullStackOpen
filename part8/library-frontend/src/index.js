@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import App from './App'
-import {
-    ApolloClient, ApolloProvider, InMemoryCache, createHttpLink
-} from '@apollo/client'
+import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink, split } from '@apollo/client'
+import { getMainDefinition } from '@apollo/client/utilities'
+import { WebSocketLink } from '@apollo/client/link/ws'
 import { setContext } from 'apollo-link-context'
 import { resolvers, typeDefs } from './resolvers/notificationResolvers'
 import { ALL_NOTIFICATIONS } from './queries/clientQueries'
@@ -29,9 +29,26 @@ const authLink = setContext((_, { headers }) => {
     }
 })
 
+const wsLink = new WebSocketLink({
+    uri: `ws://localhost:4000/graphql`,
+    options: { reconnect: true }
+})
+
+const splitLink = split(
+    ({ query }) => {
+        const definition = getMainDefinition(query)
+        return (
+            definition.kind === 'OperationDefinition' &&
+            definition.operation === 'subscription'
+        )
+    },
+    wsLink,
+    authLink.concat(httpLink)
+)
+
 const client = new ApolloClient({
     cache,
-    link: authLink.concat(httpLink),
+    link: splitLink,
     typeDefs,
     resolvers
 })
