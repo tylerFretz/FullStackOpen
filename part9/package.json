@@ -1,0 +1,19 @@
+{
+  "name": "part9",
+  "version": "1.0.0",
+  "description": "fullstack - typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ts-node": "ts-node",
+    "calculateBmi": "ts-node src/bmiCalculator.ts",
+    "calculateExercise": "ts-node src/exerciseCalculator.ts"
+  },
+  "author": "Tyler Fretz",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^14.14.22",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}
