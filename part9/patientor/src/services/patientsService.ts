@@ -1,5 +1,8 @@
 import patients from '../../data/patients';
-import { NonSensitivePatient } from '../types'; 
+import { Patient, NonSensitivePatient, NewPatient } from '../types';
+import { makeId } from '../utils';
+
+let savedPatients = [...patients];
 
 const getPatients = (): NonSensitivePatient[] => {
     return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
@@ -11,6 +14,17 @@ const getPatients = (): NonSensitivePatient[] => {
     }));
 };
 
+const addPatient = (patient: NewPatient): Patient => {
+    const newPatient = {
+        ...patient,
+        id: makeId(20)
+    };
+
+    savedPatients = savedPatients.concat(newPatient);
+    return newPatient;
+};
+
 export default {
-    getPatients
+    getPatients,
+    addPatient
 };

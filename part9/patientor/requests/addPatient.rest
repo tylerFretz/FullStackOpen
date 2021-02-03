@@ -1,0 +1,11 @@
+
+POST http://localhost:3001/api/patients HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Tyler",
+    "dateOfBirth": "05/09/1995",
+    "ssn": "asdfwe24-v324sdvasd",
+    "gender": "male",
+    "occupation": "dancer"
+}
