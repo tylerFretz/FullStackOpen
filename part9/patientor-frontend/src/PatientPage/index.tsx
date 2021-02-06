@@ -62,16 +62,21 @@ const PatientPage: React.FC = () => {
                 {" "}
                 {displayGenderIcon()}
             </h2>
-            <p>ssn: {patient?.ssn}</p>
-            <p>occupation: {patient?.occupation}</p>
+            <p><strong>ssn:</strong> {patient?.ssn}</p>
+            <p><strong>occupation:</strong> {patient?.occupation}</p>
+            <h3>Entries</h3>
 
-            {patient && patient.entries.length > 0 && <h3>Entries</h3>}
+            {patient && patient.entries.length === 0 && (
+                <p>No entries</p>
+            )}
 
-            <Card.Group>
-                {patient && patient.entries.map(entry => (
-                    <BaseEntry key={entry.id} entry={entry} />
-                ))}
-            </Card.Group>
+            {patient && patient.entries.length > 0 && (
+                <Card.Group>
+                    {patient && patient.entries.map(entry => (
+                        <BaseEntry key={entry.id} entry={entry} />
+                    ))}
+                </Card.Group>
+            )}
         </Container>
     )
 }
