@@ -72,3 +72,11 @@ interface HospitalEntry extends BaseEntry {
     type: EntryType.Hospital;
     discharge: Discharge;
 }
+
+//https://stackoverflow.com/questions/57103834/typescript-omit-a-property-from-all-interfaces-in-a-union-but-keep-the-union-s
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DistributiveOmit<T, K extends keyof any> = T extends any
+    ? Omit<T, K>
+    : never;
+
+export type NewEntry = DistributiveOmit<Entry, "id">;

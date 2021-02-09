@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
 import patientsService from '../services/patientsService';
-import { toNewPatient } from '../utils';
+import { toNewPatient, toNewEntry } from '../utils';
 
 const router = express.Router();
 
@@ -28,6 +30,23 @@ router.post('/', (req, res) => {
     catch (e) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         res.status(400).send(e.message);
+    }
+});
+
+router.post('/:id/entries', (req, res) => {
+    const patient = patientsService.getPatientById(req.params.id);
+
+    if (patient) {
+        try {
+            const newEntry = toNewEntry(req.body);
+            const updatedPatient = patientsService.addEntry(newEntry, patient);
+            res.json(updatedPatient);
+        }
+        catch (e) {
+            res.status(400).send({ error: e.message });
+        }
+    } else {
+        res.status(404).send({ error: "Sorry, this patient does not exist" });
     }
 });
 

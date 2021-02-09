@@ -4,8 +4,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Gender, NewPatient, EntryType, NewBaseEntry } from './types';
+import { Gender, NewPatient, EntryType, NewBaseEntry, HealthCheckRating, SickLeave, Discharge, Diagnosis, NewEntry } from './types';
 
+/**
+ * Helper function for exhaustive type checking
+ */
+export const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
 
 const isString = (text: any): boolean => {
     return typeof text === 'string' || text instanceof String;
@@ -34,9 +42,9 @@ const isArrayOfStrings = (param: any[]): boolean => {
     return !hasNonString;
 };
 
-// const isHealthCheckRating = (param: any): boolean => {
-//     return Object.values(HealthCheckRating).includes(param);
-// };
+const isHealthCheckRating = (param: any): boolean => {
+    return Object.values(HealthCheckRating).includes(param);
+};
 
 const parseName = (name: any): string => {
     if (!name || !isString(name)) {
@@ -80,7 +88,7 @@ const parseEntryType = (type: any): EntryType => {
     return type;
 };
 
-const parseDiagnosesCodes = (codes: any[]): string[] => {
+const parseDiagnosesCodes = (codes: any): Array<Diagnosis["code"]> => {
     if (!Array.isArray(codes) || !isArrayOfStrings(codes)) {
         throw new Error("Incorrect or missing diagnoses");
     }
@@ -101,37 +109,44 @@ const parseSpecialist = (specialist: any): string => {
     return specialist;
 };
 
-// const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
-//     if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
-//         throw new Error("Incorrect or missing Health Check Rating: " + healthCheckRating);
-//     }
-//     return healthCheckRating;
-// };
+const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
+    if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
+        throw new Error("Incorrect or missing Health Check Rating: " + healthCheckRating);
+    }
+    return healthCheckRating;
+};
 
-// const parseCriteria = (criteria: any): string => {
-//     if (!criteria || !isString(criteria)) {
-//         throw new Error("Incorrect or missing criteria: " + criteria);
-//     }
-//     return criteria;
-// };
+const parseCriteria = (criteria: any): string => {
+    if (!criteria || !isString(criteria)) {
+        throw new Error("Incorrect or missing criteria: " + criteria);
+    }
+    return criteria;
+};
 
-// const parseSickLeave = (object: any) => {
-//     if (!object)
-//         throw new Error("Missing sick leave");
-//     return {
-//         startDate: parseDate(object.startDate),
-//         endDate: parseDate(object.endDate),
-//     };
-// };
+const parseSickLeave = (object: any): SickLeave => {
+    if (!object)
+        throw new Error("Missing sick leave");
+    return {
+        startDate: parseDate(object.startDate),
+        endDate: parseDate(object.endDate),
+    };
+};
 
-// const parseDischarge = (object: any) => {
-//     if (!object)
-//         throw new Error("Missing discharge");
-//     return {
-//         date: parseDate(object.date),
-//         criteria: parseCriteria(object.criteria)
-//     };
-// };
+const parseDischarge = (object: any): Discharge => {
+    if (!object)
+        throw new Error("Missing discharge");
+    return {
+        date: parseDate(object.date),
+        criteria: parseCriteria(object.criteria)
+    };
+};
+
+const parseEmployer = (employer: any): string => {
+    if (!employer || !isString(employer)) {
+        throw new Error("Incorrect or missing employer: " + employer);
+    }
+    return employer;
+};
 
 export const toNewPatient = (object: any): NewPatient => {
     return {
@@ -142,8 +157,7 @@ export const toNewPatient = (object: any): NewPatient => {
         occupation: parseOccupation(object.occupation)
     };
 };
-
-export const toNewBaseEntry = (object: any): NewBaseEntry => {
+const toNewBaseEntry = (object: any): NewBaseEntry => {
     const newBaseEntry: NewBaseEntry = {
         type: parseEntryType(object.type),
         description: parseDescription(object.description),
@@ -154,6 +168,33 @@ export const toNewBaseEntry = (object: any): NewBaseEntry => {
         newBaseEntry.diagnosisCodes = parseDiagnosesCodes(object.diagnosisCodes);
     }
     return newBaseEntry;
+};
+
+export const toNewEntry = (object: any): NewEntry => {
+    const newBaseEntry = toNewBaseEntry(object) as NewEntry;
+
+    switch (newBaseEntry.type) {
+        case EntryType.HealthCheck:
+            return {
+                ...newBaseEntry,
+                healthCheckRating: parseHealthCheckRating(object.healthCheckRating)
+            };
+        case EntryType.OccupationalHealthCare:
+            const newEntry = {
+                ...newBaseEntry,
+                employerName: parseEmployer(object.employer)
+            };
+
+            if (object.sickLeave) {
+                newEntry.sickLeave = parseSickLeave(object.sickLeave);
+            }
+
+            return newEntry;
+        case EntryType.Hospital:
+            return { ...newBaseEntry, discharge: parseDischarge(object.discharge) };
+        default:
+            return assertNever(newBaseEntry);
+    }
 };
 
 export const makeId = (length: number): string => {

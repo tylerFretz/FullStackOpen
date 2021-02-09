@@ -1,8 +1,13 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+//https://stackoverflow.com/questions/57103834/typescript-omit-a-property-from-all-interfaces-in-a-union-but-keep-the-union-s
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DistributiveOmit<T, K extends keyof any> = T extends any
+    ? Omit<T, K>
+    : never;
 
 export interface Diagnosis {
     code: string;
@@ -81,3 +86,6 @@ export type NewPatient = Omit<Patient, 'id' | 'entries' >;
 export type PublicPatient = Omit<Patient, 'ssn' | 'entries' >;
 
 export type NewBaseEntry = Omit<BaseEntry, 'id' >;
+
+//https://stackoverflow.com/questions/57103834/typescript-omit-a-property-from-all-interfaces-in-a-union-but-keep-the-union-s
+export type NewEntry = DistributiveOmit<Entry, "id">;
